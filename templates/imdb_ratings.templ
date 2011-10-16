@@ -1,0 +1,4 @@
+<%!
+    import re
+%>
+rated ${linked_title} ${re.search(r'\d+', entry['summary']).group(0)}/10

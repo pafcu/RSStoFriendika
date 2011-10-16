@@ -1,0 +1,6 @@
+Requires:
+	Python 2.x (http://python.org/)
+	HTMLtoBBCode (https://bitbucket.org/saparvia/htmltobbcode)
+	Feedparser (http://code.google.com/p/feedparser/)
+	Mako (http://www.makotemplates.org/)
+	lxml (http://lxml.de/)

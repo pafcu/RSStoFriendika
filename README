@@ -1,0 +1,9 @@
+RSStoFriendika is a program to post items from RSS feeds to Friendika. The items are formatted using templates before posting.
+
+Usage:
+1) Create a file containing RSS URL and path to template on each line
+e.g.
+http://myblog.org/feed.rss templates/generic_summary.templ
+http://myphotos.org/feed.rss templates/generic_photo.templ
+
+2) run RSStoFriendika.py
