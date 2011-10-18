@@ -18,10 +18,12 @@ import lxml.etree as etree
 
 conf_path = 'RSStoFriendika.conf'
 
-def tweet(server, message):
+def tweet(server, message, group_allow=None):
 	url = server + '/api/statuses/update'
-	urllib2.urlopen(url, urllib.urlencode({'status': message}))
+	urllib2.urlopen(url, urllib.urlencode({'status': message,'group_allow[]':group_allow}, doseq=True))
 
+# Server can also convert HTML to BBCode but then templats must also be done in HTML
+# Maybe later
 htmltobbcode = etree.parse('htmltobbcode/HTMLtoBBCode.xslt')
 htmlparser = etree.HTMLParser()
 def makebbcode(html):
@@ -57,6 +59,10 @@ try:
 	feeds_updated = config.getfloat('main','updated')
 except:
 	feeds_updated = 0
+try:
+	max_items = config.getint('main','max_per_feed')
+except:
+	max_items = None
 
 if config_changed:
 	reply = raw_input('Save config? (y/N): ')
@@ -86,10 +92,16 @@ for line in open(feeds_path):
 	if line.startswith('#'): # Skip comments
 		continue
 
-	feed_url, template_path = line.strip().split()
+	try:
+		feed_url, template_path, allowed_groups = line.strip().split()
+		allowed_groups = [int(x) for x in allowed_groups.split(',')]
+	except ValueError:
+		feed_url, template_path = line.strip().split()
+		allowed_groups = []
+
 	feed = feedparser.parse(feed_url)
 
-	for entry in feed['entries']:
+	for entry in feed['entries'][:max_items]:
 		try:
 			guid = entry['guid']
 		except:
@@ -135,7 +147,7 @@ for line in open(feeds_path):
 			linked_title = entry['title']
 
 		message = mako.Template(filename=template_path).render_unicode(entry=entry, favicon=favicon, linked_title=linked_title).encode('utf-8')
-		tweet(server, message)
+		tweet(server, message, allowed_groups)
 
 config.set('main','updated',str(time.time()))
 
