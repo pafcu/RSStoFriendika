@@ -38,6 +38,10 @@ def getconfig(config, option, valid=''):
 	try:
 		return config.get('main',option)
 	except (ConfigParser.NoSectionError, ConfigParser.NoOptionError):
+		try:
+			config.add_section('main')
+		except ConfigParser.DuplicateSectionError:
+			pass
 		config.set('main',option,raw_input('%s%s: '%(option.replace('_',' '), valid)))
 		config_changed = True
 		return config.get('main',option)
